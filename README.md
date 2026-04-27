@@ -6,7 +6,7 @@
     <title>Tilmoc AI | Global Pro</title>
     <style>
         :root { 
-            --primary: #1a73e8;
+            --primary: #1a73e8; 
             --secondary: #4285f4;
             --white: #ffffff;
         }
