@@ -9,7 +9,7 @@
             --primary: #1a73e8; 
             --secondary: #4285f4;
             --white: #ffffff;
-        }
+        } 
 
         /* 1. AVVALGI TO'Q KO'K HARAKATLANUVCHI FON */
         body {
