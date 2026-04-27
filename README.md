@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tilmoc AI | Global Pro</title>
-    <style>
+    <style> 
         :root { 
             --primary: #1a73e8; 
             --secondary: #4285f4;
