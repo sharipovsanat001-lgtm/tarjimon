@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviewer AI | Global Pro</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --secondary: #4285f4;
+            --white: #ffffff;
+        }
+
+        /* 1. AVVALGI TO'Q KO'K HARAKATLANUVCHI FON */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #6dd5ed, #2193b0);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Asosiy karta */
+        .main-card {
+            background: rgba(255, 255, 255, 0.95);
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 30px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 12px;
+            gap: 12px;
+        }
+
+        .tab {
+            padding: 12px 28px;
+            cursor: pointer;
+            border-radius: 14px;
+            font-weight: 600;
+            color: #444;
+            transition: 0.3s;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 5px 15px rgba(26, 115, 232, 0.4);
+        }
+
+        .container { padding: 30px; }
+
+        .lang-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        select {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            outline: none;
+            cursor: pointer;
+            background: white;
+        }
+
+        .swap-circle {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.4s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .swap-circle:hover { transform: rotate(180deg); background: #1557b0; }
+
+        /* 2. TORTBURCHAKLAR ICHIDAGI "YURADIGAN" FON EFFEKTI */
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .box-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid #eee;
+            transition: 0.4s;
+            background: #fff;
+        }
+
+        /* Sichqoncha tekkanda fon yurishi */
+        .box-container:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(26, 115, 232, 0.2);
+            background: linear-gradient(120deg, #ffffff 0%, #f0f7ff 50%, #ffffff 100%);
+            background-size: 200% 100%;
+            animation: moveShine 2s linear infinite;
+        }
+
+        @keyframes moveShine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        textarea, .output-box {
+            width: 100%;
+            height: 280px;
+            padding: 20px;
+            font-size: 19px;
+            border: none;
+            background: transparent; /* Fon ko'rinishi uchun */
+            box-sizing: border-box;
+            outline: none;
+            color: #222;
+        }
+
+        textarea { resize: none; }
+        .output-box { overflow-y: auto; color: #333; border-left: 1px solid #f0f0f0; }
+
+        /* Pastki qism */
+        .footer {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e8f0fe;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-tarjima {
+            background: var(--primary);
+            color: white;
+            padding: 16px 55px;
+            border: none;
+            border-radius: 15px;
+            font-size: 19px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-tarjima:hover {
+            background: #1557b0;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(26, 115, 232, 0.5);
+        }
+
+        .file-link {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 20px;
+            border-bottom: 2px solid transparent;
+        }
+        .file-link:hover { border-bottom-color: var(--primary); }
+
+        @media (max-width: 768px) { .editor-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="tabs">
+        <div class="tab active" id="tab1" onclick="setMode('translate')">Tarjimon</div>
+        <div class="tab" id="tab2" onclick="setMode('translit')">Lotin ⇄ Kirill</div>
+    </div>
+
+    <div class="container">
+        <div id="trBar" class="lang-header">
+            <select id="selFrom"><option value="auto">Tilni aniqlash</option></select>
+            <div class="swap-circle" onclick="swap()">⇄</div>
+            <select id="selTo"></select>
+        </div>
+
+        <div id="tsBar" class="lang-header" style="display:none">
+            <select id="tsFrom"><option value="lo">Lotincha</option><option value="ki">Kirillcha</option></select>
+            <div class="swap-circle" onclick="swapTs()">⇄</div>
+            <select id="tsTo"><option value="ki">Kirillcha</option><option value="lo">Lotincha</option></select>
+        </div>
+
+        <div class="editor-grid">
+            <div class="box-container">
+                <textarea id="inputArea" placeholder="Matnni kiriting yoki fayl yuklang..."></textarea>
+            </div>
+            <div class="box-container">
+                <div class="output-box" id="outputArea">Tarjima natijasi...</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div id="tagsBox" style="flex:1"></div>
+            <div>
+                <input type="file" id="fInp" hidden onchange="readTextFile(this)">
+                <span class="file-link" onclick="document.getElementById('fInp').click()">📁 Fayl tanlash</span>
+                <button class="btn-tarjima" onclick="start()">Tarjima</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const languages = {"af":"Afrikaans","sq":"Albanian","am":"Amharic","ar":"Arabic","hy":"Armenian","az":"Azerbaijani","eu":"Basque","be":"Belarusian","bn":"Bengali","bs":"Bosnian","bg":"Bulgarian","ca":"Catalan","zh-CN":"Chinese","hr":"Croatian","cs":"Czech","da":"Danish","nl":"Dutch","en":"English","eo":"Esperanto","et":"Estonian","fi":"Finnish","fr":"French","de":"German","el":"Greek","hi":"Hindi","hu":"Hungarian","id":"Indonesian","it":"Italian","ja":"Japanese","ko":"Korean","la":"Latin","ms":"Malay","no":"Norwegian","fa":"Persian","pl":"Polish","pt":"Portuguese","ro":"Romanian","ru":"Russian","es":"Spanish","sw":"Swahili","sv":"Swedish","tg":"Tajik","tr":"Turkish","uk":"Ukrainian","uz":"Uzbek","vi":"Vietnamese"};
+
+    let currentMode = 'translate';
+    const sFrom = document.getElementById('selFrom'), sTo = document.getElementById('selTo');
+
+    // Tillarni yuklash
+    Object.entries(languages).forEach(([c, n]) => {
+        sFrom.add(new Option(n, c));
+        sTo.add(new Option(n, c));
+    });
+    sTo.value = 'uz';
+
+    function setMode(m) {
+        currentMode = m;
+        document.getElementById('tab1').className = m === 'translate' ? 'tab active' : 'tab';
+        document.getElementById('tab2').className = m === 'translit' ? 'tab active' : 'tab';
+        document.getElementById('trBar').style.display = m === 'translate' ? 'flex' : 'none';
+        document.getElementById('tsBar').style.display = m === 'translit' ? 'flex' : 'none';
+        document.querySelector('.btn-tarjima').innerText = m === 'translate' ? 'Tarjima' : 'O\'girish';
+    }
+
+    function swap() { if(sFrom.value !== 'auto') [sFrom.value, sTo.value] = [sTo.value, sFrom.value]; }
+    function swapTs() { const f = document.getElementById('tsFrom'), t = document.getElementById('tsTo'); [f.value, t.value] = [t.value, f.value]; }
+
+    async function start() {
+        const text = document.getElementById('inputArea').value;
+        const res = document.getElementById('outputArea');
+        const tags = document.getElementById('tagsBox');
+        tags.innerHTML = "";
+
+        if(!text.trim()) return;
+
+        if(currentMode === 'translit') {
+            res.innerText = translit(text, document.getElementById('tsFrom').value);
+        } else {
+            res.innerText = "Kuting...";
+            try {
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sFrom.value}&tl=${sTo.value}&dt=t&dt=at&q=${encodeURIComponent(text)}`;
+                const r = await fetch(url);
+                const d = await r.json();
+                res.innerText = d[0].map(x => x[0]).join('');
+                if(d[1]) {
+                    let h = "<b>Ma'nolari:</b> ";
+                    d[1][0][1].slice(0,5).forEach(w => h += `<span class="tag">${w}</span>`);
+                    tags.innerHTML = h;
+                }
+            } catch(e) { res.innerText = "Internetda xatolik!"; }
+        }
+    }
+
+    function translit(t, d) {
+        const l = "abdefghijklmnopqrstuvxyzshchog'".split('');
+        const k = "абдефгҳижклмнопқрстувхйзшчоғ".split('');
+        let s = t.toLowerCase().replace(/sh/g,'ш').replace(/ch/g,'ч').replace(/o'/g,'ў').replace(/g'/g,'ғ');
+        if(d === 'lo') {
+            return s.split('').map(c => k[l.indexOf(c)] || c).join('');
+        } else {
+            s = t.toLowerCase().replace(/ш/g,'sh').replace(/ч/g,'ch').replace(/ў/g,"o'").replace(/ғ/g,"g'");
+            return s.split('').map(c => l[k.indexOf(c)] || c).join('');
+        }
+    }
+
+    function readTextFile(input) {
+        const reader = new FileReader();
+        reader.onload = e => document.getElementById('inputArea').value = e.target.result;
+        reader.readAsText(input.files[0]);
+    }
+</script>
+
+</body>
+</html>
